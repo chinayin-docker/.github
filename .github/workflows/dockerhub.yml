@@ -1,0 +1,25 @@
+name: Docker Hub Description
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  images-landing-page:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+      # chinayin/images on Docker Hub is a landing-page-only repository (no tags).
+      # Its description is kept in sync from CATALOG.md so the catalog and the
+      # Hub page never drift apart.
+      - name: Docker Hub Description
+        uses: peter-evans/dockerhub-description@v5
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+          repository: chinayin/images
+          short-description: 基于Debian定制版常用Docker Images，可用于生产环境
+          readme-filepath: ./CATALOG.md

@@ -16,7 +16,7 @@
 
 ### 📦 镜像目录 · Catalog
 
-完整说明、tag 规则与构建方式见 [**chinayin-docker/images**](https://github.com/chinayin-docker/images)（这是唯一的目录源）。
+完整说明、tag 规则与构建方式见 [**CATALOG.md**](https://github.com/chinayin-docker/.github/blob/master/CATALOG.md)（唯一的目录源）。
 
 #### 基础镜像 · Base
 
@@ -110,4 +110,4 @@ FROM chinayin/debian:trixie-slim
 | ⚠️ 上游导致失败 | `php`、`php-deploy`（Debian 11 源已归档）、`apidoc`（`deasync` 原生编译） |
 | ⏸ 暂停 | `hfish`（调度工作流被 GitHub 自动停用，待升级后重启） |
 
-> 细节、变更记录与构建命令都在 [**images**](https://github.com/chinayin-docker/images) 仓库里。
+> 细节、变更记录与构建命令都在 [**CATALOG.md**](https://github.com/chinayin-docker/.github/blob/master/CATALOG.md) 里。
