@@ -63,7 +63,7 @@ Every apt-based image in this catalog starts here.
 | [`php`](https://github.com/chinayin-docker/php) | `8.4.8` (`8.4`) · `8.2.28` (`8.2`) · `7.4.33` (`7.4`) | `chinayin/debian` | [php.net](https://www.php.net/) |
 | [`php-deploy`](https://github.com/chinayin-docker/php-deploy) | `8.3.6` · `8.2.16` (`-cli`, `-cli-imagick`) · `7.4.33` (`-srv`, `-sso`) | `chinayin/debian` | [php.net](https://www.php.net/) |
 | [`openjdk`](https://github.com/chinayin-docker/openjdk) | `8` · `11.0.31` · `17.0.19` · `21.0.11` | `eclipse-temurin` on `trixie-slim` | [adoptium.net](https://adoptium.net/) |
-| [`maven`](https://github.com/chinayin-docker/maven) | `3.9.6-jdk-{8,11,17,21}` | `chinayin/openjdk` | [maven.apache.org](https://maven.apache.org/) |
+| [`maven`](https://github.com/chinayin-docker/maven) | `3.9.16-jdk-{8,11,17,21}` | `chinayin/openjdk` | [maven.apache.org](https://maven.apache.org/) |
 
 `golang:<version>-ci` additionally ships **goreleaser `v2.18.3`** and **golangci-lint `v2.15.0`**
 (`golangci-lint` is a static binary, so it works on both `amd64` and `arm64`).
@@ -151,6 +151,8 @@ are built the same way, passing the directory's own bake file or the `major` mat
 ## Notes
 
 * `kibana` and `elasticsearch` tracks are bumped together; keep them in lockstep.
+* `maven` is pinned to `3.9.16`; upstream already ships `3.10.0` (still Java 8+ compatible), so it can
+  move to the `3.10` track by bumping `version`/`minor` in `docker-bake.hcl` and the `ARG MAVEN_VERSION` lines.
 * `golang` no longer publishes `1.25`: the minor reached end-of-life, its last release was `1.25.14`.
   Older `php` (`7.2`, `7.4`) and `kibana` `6.8` tags remain pullable but track EOL upstreams.
 * Debian 11 (bullseye) packages have been archived upstream; anything still based on `bullseye` needs to move to

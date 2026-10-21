@@ -34,7 +34,7 @@
 | [`php`](https://github.com/chinayin-docker/php) | `8.4.8` · `8.2.28` · `7.4.33` |
 | [`php-deploy`](https://github.com/chinayin-docker/php-deploy) | `8.3.6` · `8.2.16` · `7.4.33`（`-cli` / `-srv` / `-sso`） |
 | [`openjdk`](https://github.com/chinayin-docker/openjdk) | `8` · `11.0.31` · `17.0.19` · `21.0.11`（Adoptium Temurin） |
-| [`maven`](https://github.com/chinayin-docker/maven) | `3.9.6-jdk-{8,11,17,21}` |
+| [`maven`](https://github.com/chinayin-docker/maven) | `3.9.16-jdk-{8,11,17,21}` |
 
 #### Web · 搜索 · 中间件
 
