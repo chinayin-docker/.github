@@ -69,8 +69,12 @@ Every apt-based image in this catalog starts here.
 | [`nginx`](https://github.com/chinayin-docker/nginx) | `1.31.7` (`1.31`, mainline) · `1.30.6` (`1.30`, stable) — njs `1.0.2` | `chinayin/debian:trixie-slim` | [nginx.org](https://nginx.org/) |
 | [`openresty`](https://github.com/chinayin-docker/openresty) | `1.31.1.1` (`1.31`) — `-bookworm-slim`, amd64 | `chinayin/debian:bookworm-slim` | [openresty.org](https://openresty.org/) |
 | [`elasticsearch`](https://github.com/chinayin-docker/elasticsearch) | `9.5.5` (`9`) · `8.19.23` (`8`) · `7.17.28` (`7`) | `elasticsearch` (official) | [elastic.co](https://www.elastic.co/) |
-| [`kibana`](https://github.com/chinayin-docker/kibana) | `8.12.1` (`8`) · `7.17.18` (`7`) · `6.8.23` (`6`) | `kibana` (official) | [elastic.co](https://www.elastic.co/) |
+| [`kibana`](https://github.com/chinayin-docker/kibana) | `9.5.5` (`9`) · `8.19.23` (`8`) · `7.17.28` (`7`) | `kibana` (official) | [elastic.co](https://www.elastic.co/) |
 | [`canal`](https://github.com/chinayin-docker/canal) | `1.1.8` (`1.1.8`) | `canal` (official) | [github/canal](https://github.com/alibaba/canal) |
+
+`elasticsearch` and `kibana` keep the same version tracks, so `chinayin/elasticsearch:<x>` pairs with
+`chinayin/kibana:<x>`. The `kibana` `7` track is held at `7.17.28` to match `elasticsearch`, although upstream
+already publishes a `kibana:7.17.29` image.
 
 `elasticsearch` bundles the Chinese analyzers **ik**, **pinyin** and **stconvert**, installed from
 `https://get.infini.cloud/elasticsearch/<plugin>/<version>` (the old `medcl/*` GitHub release assets no longer exist).
@@ -140,6 +144,7 @@ are built the same way, passing the directory's own bake file or the `major` mat
 
 ## Notes
 
+* `kibana` and `elasticsearch` tracks are bumped together; keep them in lockstep.
 * `golang` no longer publishes `1.25`: the minor reached end-of-life, its last release was `1.25.14`.
   Older `php` (`7.2`, `7.4`) and `kibana` `6.8` tags remain pullable but track EOL upstreams.
 * Debian 11 (bullseye) packages have been archived upstream; anything still based on `bullseye` needs to move to
