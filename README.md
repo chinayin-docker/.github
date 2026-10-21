@@ -12,6 +12,8 @@ A curated set of self-maintained container images. Every image lives in its own 
 and is rebuilt on a daily schedule so it keeps carrying upstream security fixes.
 
 This file is the catalog: what exists, which versions are currently pinned, and where it comes from.
+A condensed version of it is rendered on the organization landing page —
+[github.com/chinayin-docker](https://github.com/chinayin-docker) (`profile/README.md` in the `.github` repo).
 
 ## How it works
 
