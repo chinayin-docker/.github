@@ -1,7 +1,7 @@
-<h1 align="center">chinayin-docker</h1>
+<h1 align="center">Docker 自建自维护的生产级容器镜像</h1>
 
 <p align="center">
-  <b>自建自维护的容器镜像</b> · 一个镜像一个仓库 · 每日 schedule 自动重建<br/>
+  一个镜像一个仓库 · 每日 schedule 自动重建<br/>
   Curated & self-maintained container images · one repo per image · rebuilt daily
 </p>
 
