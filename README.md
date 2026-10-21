@@ -1,200 +1,146 @@
 # Docker Images
 
-### debian
+<p align="left">
+  <a href="https://hub.docker.com/u/chinayin"><img alt="Docker Hub" src="https://img.shields.io/badge/docker.io-chinayin-2496ED?logo=docker&logoColor=white"></a>
+  <a href="https://github.com/chinayin-docker"><img alt="GitHub" src="https://img.shields.io/badge/github-chinayin--docker-181717?logo=github&logoColor=white"></a>
+  <img alt="Rebuild" src="https://img.shields.io/badge/rebuild-daily%20schedule-brightgreen">
+  <img alt="Images" src="https://img.shields.io/badge/images-23-informational">
+</p>
 
-A minimalist Debian-based image built specifically to be used as a base image for containers.
+A curated set of self-maintained container images. Every image lives in its own repository under
+[`chinayin-docker`](https://github.com/chinayin-docker), is published to Docker Hub as `chinayin/<name>`,
+and is rebuilt on a daily schedule so it keeps carrying upstream security fixes.
 
-Debian is a Linux distribution that's composed entirely of free and open-source software.
+This file is the catalog: what exists, which versions are currently pinned, and where it comes from.
 
-[![](https://img.shields.io/badge/github-chinayin--docker/debian-brightgreen)](https://github.com/chinayin-docker/debian)
-[![](https://img.shields.io/badge/dockerhub-chinayin/debian-brightgreen)](https://hub.docker.com/repository/docker/chinayin/debian)
+## How it works
 
-[![Docker Image CI](https://github.com/chinayin-docker/debian/actions/workflows/ci.yml/badge.svg?event=schedule)](https://github.com/chinayin-docker/debian/actions/workflows/ci.yml)
-![Docker Image Version (latest semver)](https://img.shields.io/docker/v/chinayin/debian?sort=semver)
-![Docker Image Size (latest semver)](https://img.shields.io/docker/image-size/chinayin/debian?sort=semver)
-![Docker Pulls](https://img.shields.io/docker/pulls/chinayin/debian)
+| | |
+| --- | --- |
+| **Source of truth** | one repository per image — `chinayin-docker/<name>` |
+| **Version pinning** | `env.hcl` (`version` / `minor`) and the leading `ARG` / `ENV` of the `Dockerfile` |
+| **Registry** | `docker.io/chinayin/<name>` |
+| **Platforms** | `linux/amd64` + `linux/arm64` (multi-arch manifest; `openresty` is amd64 only) |
+| **Build** | `docker buildx bake` driven by `.github/workflows/ci.yml` |
+| **Rebuild trigger** | push to `master` **and** a daily `schedule` cron |
+| **Base images** | `chinayin/debian` where upstream packages are apt-based, otherwise the vendor image |
 
----
+## Tag conventions
 
-### php
+* `<version>` — full version, e.g. `1.31.7`, `8.19.23`
+* `<minor>` — rolling tag pinned to the current minor, e.g. `1.31`, `8`
+* `-<variant>` — upstream variant or our build flavor, e.g. `-alpine`, `-trixie`, `-ci`, `-slim`
 
-While designed for web development, the PHP scripting language also provides general-purpose use.
-
-[![](https://img.shields.io/badge/github-chinayin--docker/php-brightgreen)](https://github.com/chinayin-docker/php)
-[![](https://img.shields.io/badge/dockerhub-chinayin/php-brightgreen)](https://hub.docker.com/repository/docker/chinayin/php)
-
-[![Docker Image CI](https://github.com/chinayin-docker/php/actions/workflows/ci.yml/badge.svg?event=schedule)](https://github.com/chinayin-docker/php/actions/workflows/ci.yml)
-![Docker Image Version (latest semver)](https://img.shields.io/docker/v/chinayin/php?sort=semver)
-![Docker Image Size (latest semver)](https://img.shields.io/docker/image-size/chinayin/php?sort=semver)
-![Docker Pulls](https://img.shields.io/docker/pulls/chinayin/php)
-
----
-
-### openjdk
-
-OpenJDK is an open-source implementation of the Java Platform, Standard Edition
-
-[![](https://img.shields.io/badge/github-chinayin--docker/openjdk-brightgreen)](https://github.com/chinayin-docker/openjdk)
-[![](https://img.shields.io/badge/dockerhub-chinayin/openjdk-brightgreen)](https://hub.docker.com/repository/docker/chinayin/openjdk)
-
-[![Docker Image CI](https://github.com/chinayin-docker/openjdk/actions/workflows/ci.yml/badge.svg?event=schedule)](https://github.com/chinayin-docker/openjdk/actions/workflows/ci.yml)
-![Docker Image Version (latest semver)](https://img.shields.io/docker/v/chinayin/openjdk?sort=semver)
-![Docker Image Size (latest semver)](https://img.shields.io/docker/image-size/chinayin/openjdk?sort=semver)
-![Docker Pulls](https://img.shields.io/docker/pulls/chinayin/openjdk)
+Because images are rebuilt daily, a rolling tag (`1.31`) picks up upstream patch + security updates;
+a full version tag (`1.31.7`) is reproducible until the next explicit version bump.
 
 ---
 
-### maven
+## Catalog
 
-Apache Maven is a software project management and comprehension tool. Based on the concept of a project object model (
-POM), Maven can manage a project's build, reporting and documentation from a central piece of information.
+### 1 · Base
 
-[![](https://img.shields.io/badge/github-chinayin--docker/maven-brightgreen)](https://github.com/chinayin-docker/maven)
-[![](https://img.shields.io/badge/dockerhub-chinayin/maven-brightgreen)](https://hub.docker.com/repository/docker/chinayin/maven)
+| Image | Versions | Base | Upstream |
+| --- | --- | --- | --- |
+| [`debian`](https://github.com/chinayin-docker/debian) | `trixie` · `trixie-slim` · `bookworm` · `bookworm-slim` · `bullseye-slim` · `buster-slim` | `debian` (official) | [debian.org](https://www.debian.org/) |
 
-[![Docker Image CI](https://github.com/chinayin-docker/maven/actions/workflows/ci.yml/badge.svg?event=schedule)](https://github.com/chinayin-docker/maven/actions/workflows/ci.yml)
-![Docker Image Version (latest semver)](https://img.shields.io/docker/v/chinayin/maven?sort=semver)
-![Docker Image Size (latest semver)](https://img.shields.io/docker/image-size/chinayin/maven?sort=semver)
-![Docker Pulls](https://img.shields.io/docker/pulls/chinayin/maven)
+Minimal Debian with the small conveniences we rely on downstream (`install_packages`, tzdata, locales).
+Every apt-based image in this catalog starts here.
 
----
+### 2 · Language runtimes & build toolchains
 
-### node
+| Image | Versions | Base | Upstream |
+| --- | --- | --- | --- |
+| [`golang`](https://github.com/chinayin-docker/golang) | `1.27.3` (`1.27`) · `1.26.10` (`1.26`) — each as `-trixie`, `-alpine` and `-ci` | `golang:*-trixie` / `-alpine` | [go.dev](https://go.dev/dl/) |
+| [`node`](https://github.com/chinayin-docker/node) | `24.16.0` (`24`) · `22.22.3` (`22`) · `20.19.6` (`20`) | `node` (official) | [nodejs.org](https://nodejs.org/) |
+| [`python`](https://github.com/chinayin-docker/python) | `3.14.4` (`3.14`) · `3.12.13` (`3.12`) · `3.11.15` (`3.11`) | `python` (official) | [python.org](https://www.python.org/) |
+| [`php`](https://github.com/chinayin-docker/php) | `8.4.8` (`8.4`) · `8.2.28` (`8.2`) · `7.4.33` (`7.4`) | `chinayin/debian` | [php.net](https://www.php.net/) |
+| [`php-deploy`](https://github.com/chinayin-docker/php-deploy) | `8.3.6` · `8.2.16` (`-cli`, `-cli-imagick`) · `7.4.33` (`-srv`, `-sso`) | `chinayin/debian` | [php.net](https://www.php.net/) |
+| [`openjdk`](https://github.com/chinayin-docker/openjdk) | `8` · `11.0.31` · `17.0.19` · `21.0.11` | `eclipse-temurin` on `trixie-slim` | [adoptium.net](https://adoptium.net/) |
+| [`maven`](https://github.com/chinayin-docker/maven) | `3.9.6-jdk-{8,11,17,21}` | `chinayin/openjdk` | [maven.apache.org](https://maven.apache.org/) |
 
-Node.js is a JavaScript-based platform for server-side and networking applications.
+`golang:<version>-ci` additionally ships **goreleaser `v2.18.3`** and **golangci-lint `v2.15.0`**
+(`golangci-lint` is a static binary, so it works on both `amd64` and `arm64`).
 
-[![](https://img.shields.io/badge/github-chinayin--docker/node-brightgreen)](https://github.com/chinayin-docker/node)
-[![](https://img.shields.io/badge/dockerhub-chinayin/node-brightgreen)](https://hub.docker.com/repository/docker/chinayin/node)
+### 3 · Web, search & middleware
 
-[![Docker Image CI](https://github.com/chinayin-docker/node/actions/workflows/ci.yml/badge.svg?event=schedule)](https://github.com/chinayin-docker/node/actions/workflows/ci.yml)
-![Docker Image Version (latest semver)](https://img.shields.io/docker/v/chinayin/node?sort=semver)
-![Docker Image Size (latest semver)](https://img.shields.io/docker/image-size/chinayin/node?sort=semver)
-![Docker Pulls](https://img.shields.io/docker/pulls/chinayin/node)
+| Image | Versions | Base | Upstream |
+| --- | --- | --- | --- |
+| [`nginx`](https://github.com/chinayin-docker/nginx) | `1.31.7` (`1.31`, mainline) · `1.30.6` (`1.30`, stable) — njs `1.0.2` | `chinayin/debian:trixie-slim` | [nginx.org](https://nginx.org/) |
+| [`openresty`](https://github.com/chinayin-docker/openresty) | `1.31.1.1` (`1.31`) — `-bookworm-slim`, amd64 | `chinayin/debian:bookworm-slim` | [openresty.org](https://openresty.org/) |
+| [`elasticsearch`](https://github.com/chinayin-docker/elasticsearch) | `9.5.5` (`9`) · `8.19.23` (`8`) · `7.17.28` (`7`) | `elasticsearch` (official) | [elastic.co](https://www.elastic.co/) |
+| [`kibana`](https://github.com/chinayin-docker/kibana) | `8.12.1` (`8`) · `7.17.18` (`7`) · `6.8.23` (`6`) | `kibana` (official) | [elastic.co](https://www.elastic.co/) |
+| [`canal`](https://github.com/chinayin-docker/canal) | `1.1.8` (`1.1.8`) | `canal` (official) | [github/canal](https://github.com/alibaba/canal) |
 
----
+`elasticsearch` bundles the Chinese analyzers **ik**, **pinyin** and **stconvert**, installed from
+`https://get.infini.cloud/elasticsearch/<plugin>/<version>` (the old `medcl/*` GitHub release assets no longer exist).
 
-### nginx
+> `openresty` is pinned to `bookworm`: the official OpenResty apt repository has no `trixie` distribution yet.
 
-Nginx (pronounced "engine-x") is an open source reverse proxy server for HTTP, HTTPS, SMTP, POP3, and IMAP protocols, as
-well as a load balancer, HTTP cache, and a web server (origin server). The nginx project started with a strong focus on
-high concurrency, high performance and low memory usage. It is licensed under the 2-clause BSD-like license and it runs
-on Linux, BSD variants, Mac OS X, Solaris, AIX, HP-UX, as well as on other *nix flavors. It also has a proof of concept
-port for Microsoft Windows.
+### 4 · Security & networking
 
-[![](https://img.shields.io/badge/github-chinayin--docker/nginx-brightgreen)](https://github.com/chinayin-docker/nginx)
-[![](https://img.shields.io/badge/dockerhub-chinayin/nginx-brightgreen)](https://hub.docker.com/repository/docker/chinayin/nginx)
+| Image | Versions | Base | Upstream |
+| --- | --- | --- | --- |
+| [`hfish`](https://github.com/chinayin-docker/hfish) | `3.3.4` (`3`) · `0.6.5` — server & client | `chinayin/debian` / `alpine` | [hfish.io](https://hfish.net/) |
+| [`v2ray`](https://github.com/chinayin-docker/v2ray) | `5.x` — `bookworm` / `bullseye` flavor tags | `chinayin/debian` | [v2fly.org](https://www.v2fly.org/) |
 
-[![Docker Image CI](https://github.com/chinayin-docker/nginx/actions/workflows/ci.yml/badge.svg?event=schedule)](https://github.com/chinayin-docker/nginx/actions/workflows/ci.yml)
-![Docker Image Version (latest semver)](https://img.shields.io/docker/v/chinayin/nginx?sort=semver)
-![Docker Image Size (latest semver)](https://img.shields.io/docker/image-size/chinayin/nginx?sort=semver)
-![Docker Pulls](https://img.shields.io/docker/pulls/chinayin/nginx)
+> `hfish` scheduled builds are currently **paused** (GitHub disabled the workflow after a long idle period,
+> and its pinned actions are still on the pre-Node-24 generation). Re-enable together with an action bump.
 
----
+### 5 · Dev & ops tooling
 
-### openresty
+| Image | Versions | Base | Upstream |
+| --- | --- | --- | --- |
+| [`kaniko-project`](https://github.com/chinayin-docker/kaniko-project) | `v1.23.2` (`-debug`, `-slim`) | `kaniko` (official) | [github/kaniko](https://github.com/GoogleContainerTools/kaniko) |
+| [`kiro-cli`](https://github.com/chinayin-docker/kiro-cli) | `latest` (tracking upstream) | `chinayin/debian` / `alpine` | [kiro.dev](https://kiro.dev/) |
+| [`playwright`](https://github.com/chinayin-docker/playwright) | `1.58.0` on `python-3.11` / `python-3.12` | `chinayin/python` | [playwright.dev](https://playwright.dev/) |
+| [`apidoc`](https://github.com/chinayin-docker/apidoc) | `1.2.0` | `chinayin/node` | [apidocjs.com](https://apidocjs.com/) |
 
-OpenResty is a full-fledged web application server by bundling the standard nginx core, lots of 3rd-party nginx modules,
-as well as most of their external dependencies.
+### 6 · Applications
 
-[![](https://img.shields.io/badge/github-chinayin--docker/openresty-brightgreen)](https://github.com/chinayin-docker/openresty)
-[![](https://img.shields.io/badge/dockerhub-chinayin/openresty-brightgreen)](https://hub.docker.com/repository/docker/chinayin/openresty)
-
-[![Docker Image CI](https://github.com/chinayin-docker/openresty/actions/workflows/ci.yml/badge.svg?event=schedule)](https://github.com/chinayin-docker/openresty/actions/workflows/ci.yml)
-![Docker Image Version (latest semver)](https://img.shields.io/docker/v/chinayin/openresty?sort=semver)
-![Docker Image Size (latest semver)](https://img.shields.io/docker/image-size/chinayin/openresty?sort=semver)
-![Docker Pulls](https://img.shields.io/docker/pulls/chinayin/openresty)
-
----
-
-### elasticsearch
-
-Elasticsearch is a distributed, RESTful search and analytics engine capable of solving a growing number of use cases. As
-the heart of the Elastic Stack, it centrally stores your data so you can discover the expected and uncover the
-unexpected.
-
-[![](https://img.shields.io/badge/github-chinayin--docker/elasticsearch-brightgreen)](https://github.com/chinayin-docker/elasticsearch)
-[![](https://img.shields.io/badge/dockerhub-chinayin/elasticsearch-brightgreen)](https://hub.docker.com/repository/docker/chinayin/elasticsearch)
-
-[![Docker Image CI](https://github.com/chinayin-docker/elasticsearch/actions/workflows/ci.yml/badge.svg?event=schedule)](https://github.com/chinayin-docker/elasticsearch/actions/workflows/ci.yml)
-![Docker Image Version (latest semver)](https://img.shields.io/docker/v/chinayin/elasticsearch?sort=semver)
-![Docker Image Size (latest semver)](https://img.shields.io/docker/image-size/chinayin/elasticsearch?sort=semver)
-![Docker Pulls](https://img.shields.io/docker/pulls/chinayin/elasticsearch)
+| Image | Versions | Base | Upstream |
+| --- | --- | --- | --- |
+| [`xxl-job-admin`](https://github.com/chinayin-docker/xxl-job-admin) | `2.4.0` (`2.4`, `2`) | `chinayin/openjdk` | [xuxueli/xxl-job](https://github.com/xuxueli/xxl-job) |
+| [`xxl-job-executor-springboot`](https://github.com/chinayin-docker/xxl-job-executor-springboot) | `2.4.0` (`2.4`, `2`) | `chinayin/openjdk` | [xuxueli/xxl-job](https://github.com/xuxueli/xxl-job) |
+| [`BOCEPayJavaBridge`](https://github.com/chinayin-docker/BOCEPayJavaBridge) | built from source (`master`, tags `v*`) | `chinayin/openjdk` | internal |
 
 ---
 
-### kibana
+## Building locally
 
-Kibana is your window into the Elastic Stack. Specifically, it's a browser-based analytics and search dashboard for
-Elasticsearch.
+Each image repository is self-contained. With [buildx](https://docs.docker.com/build/) installed:
 
-[![](https://img.shields.io/badge/github-chinayin--docker/kibana-brightgreen)](https://github.com/chinayin-docker/kibana)
-[![](https://img.shields.io/badge/dockerhub-chinayin/kibana-brightgreen)](https://hub.docker.com/repository/docker/chinayin/kibana)
+```bash
+git clone git@github.com:chinayin-docker/golang.git && cd golang
 
-[![Docker Image CI](https://github.com/chinayin-docker/kibana/actions/workflows/ci.yml/badge.svg?event=schedule)](https://github.com/chinayin-docker/kibana/actions/workflows/ci.yml)
-![Docker Image Version (latest semver)](https://img.shields.io/docker/v/chinayin/kibana?sort=semver)
-![Docker Image Size (latest semver)](https://img.shields.io/docker/image-size/chinayin/kibana?sort=semver)
-![Docker Pulls](https://img.shields.io/docker/pulls/chinayin/kibana)
+# pick a pinned version file, then bake
+docker buildx bake -f docker-bake.hcl -f 1.27/env.hcl --print     # inspect targets/tags
+docker buildx bake -f docker-bake.hcl -f 1.27/env.hcl             # build locally
+docker buildx bake -f docker-bake.hcl -f 1.27/env.hcl --push      # push to your registry
+```
 
---- 
+Repositories that keep one directory per version instead of an `env.hcl` (`nginx`, `elasticsearch`, `openresty`)
+are built the same way, passing the directory's own bake file or the `major` matrix value used by CI.
 
-### canal
+## Bumping a version
 
-阿里巴巴 MySQL binlog 增量订阅&消费组件
+1. Update the pinned version (`env.hcl`, `major:` matrix in `ci.yml`, or the `ARG …VERSION` in the `Dockerfile`).
+2. Add the new version directory if the image keeps one directory per release.
+3. Run `actionlint .github/workflows/*.yml`, commit, push — CI builds and publishes immediately,
+   then keeps rebuilding daily.
+4. Update the row in the catalog above.
 
-[![](https://img.shields.io/badge/github-chinayin--docker/canal-brightgreen)](https://github.com/chinayin-docker/canal)
-[![](https://img.shields.io/badge/dockerhub-chinayin/canal-brightgreen)](https://hub.docker.com/repository/docker/chinayin/canal)
+## Status snapshot
 
-[![Docker Image CI](https://github.com/chinayin-docker/canal/actions/workflows/ci.yml/badge.svg?event=schedule)](https://github.com/chinayin-docker/canal/actions/workflows/ci.yml)
-![Docker Image Version (latest semver)](https://img.shields.io/docker/v/chinayin/canal?sort=semver)
-![Docker Image Size (latest semver)](https://img.shields.io/docker/image-size/chinayin/canal?sort=semver)
-![Docker Pulls](https://img.shields.io/docker/pulls/chinayin/canal)
+| State | Images |
+| --- | --- |
+| ✅ building & publishing | `debian`, `golang`, `node`, `python`, `openjdk`, `maven`, `nginx`, `openresty`, `elasticsearch`, `kibana`, `canal`, `v2ray`, `kaniko-project`, `kiro-cli`, `playwright`, `xxl-job-admin`, `xxl-job-executor-springboot`, `BOCEPayJavaBridge` |
+| ⚠️ known upstream breakage | `php`, `php-deploy` (Debian 11/bullseye apt sources were archived → 404), `apidoc` (`deasync` needs a native build that fails on current Node) |
+| ⏸ paused | `hfish` (scheduled workflow disabled by GitHub after inactivity) |
 
---- 
+## Notes
 
-### hfish
-
-安全、可靠、简单、免费的企业级蜜罐
-
-[![](https://img.shields.io/badge/github-chinayin--docker/hfish-brightgreen)](https://github.com/chinayin-docker/hfish)
-[![](https://img.shields.io/badge/dockerhub-chinayin/hfish-brightgreen)](https://hub.docker.com/repository/docker/chinayin/hfish)
-
-[![Docker Image CI](https://github.com/chinayin-docker/hfish/actions/workflows/ci.yml/badge.svg?event=schedule)](https://github.com/chinayin-docker/hfish/actions/workflows/ci.yml)
-![Docker Image Version (latest semver)](https://img.shields.io/docker/v/chinayin/hfish?sort=semver)
-![Docker Image Size (latest semver)](https://img.shields.io/docker/image-size/chinayin/hfish?sort=semver)
-![Docker Pulls](https://img.shields.io/docker/pulls/chinayin/hfish)
-
----
-
-### xxl-job
-
-A distributed task scheduling framework.（分布式任务调度平台XXL-JOB）
-
-[![](https://img.shields.io/badge/github-chinayin--docker/xxl--job--admin-brightgreen)](https://github.com/chinayin-docker/xxl-job-admin)
-[![](https://img.shields.io/badge/dockerhub-chinayin/xxl--job--admin-brightgreen)](https://hub.docker.com/repository/docker/chinayin/xxl-job-admin)
-
-[![Docker Image CI](https://github.com/chinayin-docker/xxl-job-admin/actions/workflows/ci.yml/badge.svg?event=schedule)](https://github.com/chinayin-docker/xxl-job-admin/actions/workflows/ci.yml)
-![Docker Image Version (latest semver)](https://img.shields.io/docker/v/chinayin/xxl-job-admin?sort=semver)
-![Docker Image Size (latest semver)](https://img.shields.io/docker/image-size/chinayin/xxl-job-admin?sort=semver)
-![Docker Pulls](https://img.shields.io/docker/pulls/chinayin/xxl-job-admin)
-
-[![](https://img.shields.io/badge/github-chinayin--docker/xxl--job--executor--springboot-brightgreen)](https://github.com/chinayin-docker/xxl-job-executor-springboot)
-[![](https://img.shields.io/badge/dockerhub-chinayin/xxl--job--executor--springboot-brightgreen)](https://hub.docker.com/repository/docker/chinayin/xxl-job-executor-springboot)
-
-[![Docker Image CI](https://github.com/chinayin-docker/xxl-job-executor-springboot/actions/workflows/ci.yml/badge.svg?event=schedule)](https://github.com/chinayin-docker/xxl-job-executor-springboot/actions/workflows/ci.yml)
-![Docker Image Version (latest semver)](https://img.shields.io/docker/v/chinayin/xxl-job-executor-springboot?sort=semver)
-![Docker Image Size (latest semver)](https://img.shields.io/docker/image-size/chinayin/xxl-job-executor-springboot?sort=semver)
-![Docker Pulls](https://img.shields.io/docker/pulls/chinayin/xxl-job-executor-springboot)
-
---- 
-
-### v2ray
-
-A platform for building proxies to bypass network restrictions.
-
-[![](https://img.shields.io/badge/github-chinayin--docker/v2ray-brightgreen)](https://github.com/chinayin-docker/v2ray)
-[![](https://img.shields.io/badge/dockerhub-chinayin/v2ray-brightgreen)](https://hub.docker.com/repository/docker/chinayin/v2ray)
-
-[![Docker Image CI](https://github.com/chinayin-docker/v2ray/actions/workflows/ci.yml/badge.svg?event=schedule)](https://github.com/chinayin-docker/v2ray/actions/workflows/ci.yml)
-![Docker Image Version (latest semver)](https://img.shields.io/docker/v/chinayin/v2ray?sort=semver)
-![Docker Image Size (latest semver)](https://img.shields.io/docker/image-size/chinayin/v2ray?sort=semver)
-![Docker Pulls](https://img.shields.io/docker/pulls/chinayin/v2ray)
+* `golang` no longer publishes `1.25`: the minor reached end-of-life, its last release was `1.25.14`.
+  Older `php` (`7.2`, `7.4`) and `kibana` `6.8` tags remain pullable but track EOL upstreams.
+* Debian 11 (bullseye) packages have been archived upstream; anything still based on `bullseye` needs to move to
+  `bookworm` (Debian 12) or `trixie` (Debian 13) before its next rebuild can succeed.
